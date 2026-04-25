@@ -1,0 +1,71 @@
+INSERT INTO permissions (code, name) VALUES
+('garden.view', 'View gardens'),
+('garden.create', 'Create garden'),
+('garden.update', 'Update garden'),
+('garden.delete', 'Delete garden'),
+('garden.restore', 'Restore garden'),
+
+('member.view', 'View members'),
+('member.create', 'Create member'),
+('member.invite', 'Invite member'),
+('member.update', 'Update member'),
+('member.delete', 'Delete member'),
+
+('species.view', 'View species'),
+('species.create', 'Create species'),
+('species.update', 'Update species'),
+('species.delete', 'Delete species'),
+('species.restore', 'Restore species'),
+
+('variety.view', 'View varieties'),
+('variety.create', 'Create varieties'),
+('variety.update', 'Update varieties'),
+('variety.delete', 'Delete varieties'),
+('variety.restore', 'Restore varieties'),
+
+('plant.view', 'View plants'),
+('plant.create', 'Create plants'),
+('plant.update', 'Update plants'),
+('plant.delete', 'Delete plants'),
+('plant.restore', 'Restore plants'),
+('plant.export', 'Export plants'),
+('plant.status.update', 'Update plant status'),
+
+('plant_timeline.view', 'View plant timelines'),
+('plant_timeline.create', 'Create plant timelines'),
+('plant_timeline.update', 'Update plant timelines'),
+('plant_timeline.delete', 'Delete plant timelines'),
+('plant_timeline.restore', 'Restore plant timelines'),
+
+('supplier.view', 'View suppliers'),
+('supplier.create', 'Create suppliers'),
+('supplier.update', 'Update suppliers'),
+('supplier.delete', 'Delete suppliers'),
+('supplier.restore', 'Restore suppliers'),
+
+('purchase.view', 'View purchases'),
+('purchase.create', 'Create purchases'),
+('purchase.update', 'Update purchases'),
+('purchase.delete', 'Delete purchases'),
+('purchase.restore', 'Restore purchases'),
+('purchase.export', 'Export purchases'),
+
+('expense.view', 'View expenses'),
+('expense.create', 'Create expenses'),
+('expense.update', 'Update expenses'),
+('expense.delete', 'Delete expenses'),
+('expense.restore', 'Restore expenses'),
+('expense.export', 'Export expenses'),
+
+('sale.view', 'View sales'),
+('sale.create', 'Create sales'),
+('sale.update', 'Update sales'),
+('sale.delete', 'Delete sales'),
+('sale.restore', 'Restore sales'),
+('sale.export', 'Export sales'),
+
+('dashboard.view', 'View dashboard'),
+('dashboard.export', 'Export dashboard'),
+
+('audit.view', 'View audit logs'),
+('audit.export', 'Export audit logs');
