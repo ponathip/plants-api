@@ -49,8 +49,6 @@ export async function getPurchaseItems(req, reply) {
 
 export async function generatePlantsFromPurchaseItem(req, reply) {
   const purchaseItemId = Number(req.params.id);
-  // const { gardenId } = req.gardenContext;
-  const gardenId = 1
   const userId = req.user?.userId || req.user?.id || null;
   const requestedCount = Number(req.body?.count || 0);
 
@@ -80,7 +78,7 @@ export async function generatePlantsFromPurchaseItem(req, reply) {
       `,
       [purchaseItemId]
     );
-
+    const gardenId = Number(item.garden_id);
     if (!item) {
       // await conn.rollback();
       return reply.code(404).send({ message: "ไม่พบ purchase item" });

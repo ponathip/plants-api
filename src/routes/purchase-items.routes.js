@@ -11,7 +11,10 @@ export default async function purchaseItemsRoutes(app) {
   app.post(
     "/:id/generate-plants",
     {
-      preHandler: [app.authenticate, app.gardenGuard(["owner", "admin", "staff"])],
+      preHandler: [
+        app.authenticate,
+        app.gardenGuard({ allowSuperWithoutGarden: true, requireGarden: false }),
+      ],
     },
     generatePlantsFromPurchaseItem
   );
