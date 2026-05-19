@@ -1,5 +1,6 @@
 import { db } from "../config/db.js";
 import { writeAudit } from "../services/audit.service.js";
+import { createPlantTimelineLog } from "../services/plantTimeline.service.js";
 
 function normalizeEmpty(v) {
   return v === "" || v === undefined ? null : v;
@@ -62,7 +63,7 @@ export async function createPlantGraft(req, reply) {
 
     const [[plant]] = await conn.query(
       `SELECT id, garden_id FROM plants WHERE id = ? AND deleted_at IS NULL`,
-      [plantId]
+      [plantId],
     );
 
     if (!plant) {
@@ -72,7 +73,10 @@ export async function createPlantGraft(req, reply) {
 
     const gardenId = plant.garden_id;
 
-    if (!(ctx.isSuper && ctx.scope === "all") && Number(ctx.gardenId) !== Number(gardenId)) {
+    if (
+      !(ctx.isSuper && ctx.scope === "all") &&
+      Number(ctx.gardenId) !== Number(gardenId)
+    ) {
       await conn.rollback();
       return reply.code(403).send({ message: "ไม่มีสิทธิ์ในสวนนี้" });
     }
@@ -91,9 +95,11 @@ export async function createPlantGraft(req, reply) {
         grafted_at,
         status,
         note,
+        image_url,
+        image_public_id,
         created_by,
         updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
       `,
       [
         gardenId,
@@ -107,8 +113,10 @@ export async function createPlantGraft(req, reply) {
         normalizeEmpty(body.grafted_at),
         body.status || "alive",
         normalizeEmpty(body.note),
+        normalizeEmpty(body.image_url),
+        normalizeEmpty(body.image_public_id),
         userId,
-      ]
+      ],
     );
 
     await writeAudit({
@@ -118,6 +126,26 @@ export async function createPlantGraft(req, reply) {
       entity: "plant_grafts",
       entityId: result.insertId,
       newData: body,
+    });
+
+    const [[variety]] = await conn.query(
+      `SELECT name FROM plant_varieties WHERE id = ? LIMIT 1`,
+      [body.graft_variety_id],
+    );
+
+    await createPlantTimelineLog({
+      plantId: Number(plantId),
+      gardenId,
+      eventType: "graft_added",
+      title: "เพิ่มยอด / สายพันธุ์",
+      description: `เพิ่มยอด ${variety?.name || ""} ด้วยวิธี ${
+        body.method === "budding"
+          ? "ติดตา"
+          : body.method === "grafting"
+            ? "เสียบยอด"
+            : "อื่นๆ"
+      }`,
+      createdBy: userId,
     });
 
     await conn.commit();
@@ -139,7 +167,7 @@ export async function updatePlantGraft(req, reply) {
 
     const [[oldRow]] = await db.query(
       `SELECT * FROM plant_grafts WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!oldRow) {
@@ -173,7 +201,7 @@ export async function updatePlantGraft(req, reply) {
         body.status || "alive",
         normalizeEmpty(body.note),
         id,
-      ]
+      ],
     );
 
     await writeAudit({
@@ -184,6 +212,15 @@ export async function updatePlantGraft(req, reply) {
       entityId: id,
       oldData: oldRow,
       newData: body,
+    });
+
+    await createPlantTimelineLog({
+      plantId: oldRow.plant_id,
+      gardenId: oldRow.garden_id,
+      eventType: "graft_updated",
+      title: "แก้ไขข้อมูลยอด / สายพันธุ์",
+      description: "มีการแก้ไขข้อมูลยอดบนต้นนี้",
+      createdBy: userId,
     });
 
     return reply.send({ success: true });
@@ -200,7 +237,7 @@ export async function deletePlantGraft(req, reply) {
 
     const [[oldRow]] = await db.query(
       `SELECT * FROM plant_grafts WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!oldRow) {
@@ -216,6 +253,15 @@ export async function deletePlantGraft(req, reply) {
       entity: "plant_grafts",
       entityId: id,
       oldData: oldRow,
+    });
+
+    await createPlantTimelineLog({
+      plantId: oldRow.plant_id,
+      gardenId: oldRow.garden_id,
+      eventType: "graft_deleted",
+      title: "ลบยอด / สายพันธุ์",
+      description: "มีการลบยอดออกจากต้นนี้",
+      createdBy: userId,
     });
 
     return reply.send({ success: true });

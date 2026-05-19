@@ -697,6 +697,22 @@ export async function getPlantByQrToken(req, reply) {
       }
     }
 
+    const [grafts] = await db.query(
+      `
+      SELECT
+        pg.*,
+        pv.name AS graft_variety_name,
+        COALESCE(sv.name, sp.name, CONCAT('Plant #', sp.id)) AS source_plant_name
+      FROM plant_grafts pg
+      LEFT JOIN plant_varieties pv ON pv.id = pg.graft_variety_id
+      LEFT JOIN plants sp ON sp.id = pg.source_plant_id
+      LEFT JOIN plant_varieties sv ON sv.id = sp.plant_variety_id
+      WHERE pg.plant_id = ?
+      ORDER BY pg.id DESC
+      `,
+      [plant.id]
+    );
+
     return reply.send({
       plant,
       timeline,
@@ -704,6 +720,7 @@ export async function getPlantByQrToken(req, reply) {
       purchase_item,
       purchase_images,
       purchase_item_images,
+      grafts,
     });
   } catch (error) {
     console.error("getPlantByQrToken error:", error);
