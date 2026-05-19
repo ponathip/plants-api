@@ -29,7 +29,8 @@ export async function createPlant(req, reply) {
   let conn;
   try {
     const body = req.body || {};
-    const { gardenId } = req.gardenContext;
+    const ctx = req.gardenContext || {};
+    const gardenId = ctx.gardenId || body.garden_id;
     const userId = req.user.userId;
 
     if (!gardenId) {
@@ -804,7 +805,8 @@ export async function updatePlant(req, reply) {
   try {
     const { id } = req.params;
     const body = req.body || {};
-    const { gardenId } = req.gardenContext;
+    const ctx = req.gardenContext || {};
+    const gardenId = ctx.gardenId || body.garden_id;
     const userId = req.user.userId;
 
     if (!gardenId) {

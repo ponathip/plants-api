@@ -18,6 +18,8 @@ import suppliersRoutes from "./routes/suppliers.routes.js"
 import expenseRoutes from "./routes/expenses.routes.js"
 import plantTimelinesRoutes from "./routes/plant-timelines.routes.js"
 import auditRoutes from "./routes/audit.routes.js";
+import plantGraftRoutes from "./routes/plantGraft.routes.js";
+
 // import swaggerTestRoutes from './routes/__swagger_test.routes.js'
 
 const start = async () => {
@@ -55,6 +57,7 @@ const start = async () => {
   await app.register(expenseRoutes, {prefix: "/expenses"} )
   await app.register(plantTimelinesRoutes, {prefix: "/plant-timelines"} )
   await app.register(auditRoutes, { prefix: "/audit-logs" });
+  await app.register(plantGraftRoutes);
   await varietiesRoutes(app);
 
   await app.listen({ port: Number(process.env.PORT || 3001),

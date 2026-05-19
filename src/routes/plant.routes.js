@@ -50,7 +50,7 @@ export default async function plantRoutes(app) {
     {
       preHandler: [
         app.authenticate,
-        app.gardenGuard({ allowSuperWithoutGarden: false, requireGarden: true }),
+        app.gardenGuard({ allowSuperWithoutGarden: true, requireGarden: false }),
         app.permissionGuard(["plant.create"]),
       ],
     },
@@ -62,7 +62,7 @@ export default async function plantRoutes(app) {
     {
       preHandler: [
         app.authenticate,
-        app.gardenGuard({ allowSuperWithoutGarden: false, requireGarden: true }),
+        app.gardenGuard({ allowSuperWithoutGarden: true, requireGarden: false }),
         app.permissionGuard(["plant.update"]),
       ],
     },
