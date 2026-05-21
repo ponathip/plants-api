@@ -759,11 +759,34 @@ export async function listPlants(req, reply) {
 
     if (search) {
       where += ` AND (
-        COALESCE(pv.name, p.name) LIKE ?
+        p.plant_code LIKE ?
         OR p.name LIKE ?
-        OR p.plant_code LIKE ?
+        OR pv.name LIKE ?
+        OR ps.name LIKE ?
+        OR g.name LIKE ?
+        OR p.zone_name LIKE ?
+        OR p.location_name LIKE ?
+        OR EXISTS (
+          SELECT 1
+          FROM plant_grafts pg
+          LEFT JOIN plant_varieties gv ON gv.id = pg.graft_variety_id
+          WHERE pg.plant_id = p.id
+            AND gv.name LIKE ?
+        )
       )`;
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+
+      const keyword = `%${search}%`;
+
+      params.push(
+        keyword,
+        keyword,
+        keyword,
+        keyword,
+        keyword,
+        keyword,
+        keyword,
+        keyword
+      );
     }
 
     if (status && status !== "all") {
@@ -809,6 +832,8 @@ export async function listPlants(req, reply) {
       `
       SELECT COUNT(*) AS total
       FROM plants p
+      LEFT JOIN gardens g ON g.id = p.garden_id
+      LEFT JOIN plant_species ps ON ps.id = p.species_id
       LEFT JOIN plant_varieties pv ON pv.id = p.plant_variety_id
       ${where}
       `,
