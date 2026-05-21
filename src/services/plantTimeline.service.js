@@ -23,9 +23,9 @@ export async function createPlantTimelineLog(
     imageUrl = null,
     createdBy = null,
   },
-  conn = db
+  // conn = db
 ) {
-  await conn.query(
+  await db.query(
     `
     INSERT INTO plant_timelines (
       plant_id, garden_id, event_type, event_date,

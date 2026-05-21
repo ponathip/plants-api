@@ -26,7 +26,7 @@ async function getNextPlantCode(conn, gardenId) {
 
 /* ========================= CREATE ========================= */
 export async function createPlant(req, reply) {
-  let conn;
+  // let conn;
   try {
     const body = req.body || {};
     const ctx = req.gardenContext || {};
@@ -45,8 +45,8 @@ export async function createPlant(req, reply) {
       return reply.code(400).send({ message: "กรุณาเลือกพันธุ์ไม้ หรือกรอกชื่อพืช" });
     }
 
-    conn = await db.getConnection();
-    await conn.beginTransaction();
+    // conn = await db.getConnection();
+    // await conn.beginTransaction();
 
     const qrToken = generateQrToken();
     let plantCode;
@@ -55,7 +55,7 @@ export async function createPlant(req, reply) {
     while (retry < 3) {
       plantCode = await getNextPlantCode(conn, gardenId);
       try {
-        const [result] = await conn.query(
+        const [result] = await db.query(
           `
           INSERT INTO plants (
             garden_id, species_id, plant_variety_id,
@@ -116,11 +116,11 @@ export async function createPlant(req, reply) {
             title: "เพิ่มต้นพืช",
             createdBy: userId,
           },
-          conn
+          // conn
         );
 
-        await conn.commit();
-        conn.release();
+        // await conn.commit();
+        // conn.release();
 
         return reply.send({
           success: true,
