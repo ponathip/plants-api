@@ -137,8 +137,14 @@ export async function createPlant(req, reply) {
   } catch (err) {
     if (conn) await conn.rollback();
     if (conn) conn.release();
-    console.error(err);
-    reply.code(500).send({ message: "create plant failed" });
+    console.error("createPlant error:", err);
+
+    reply.code(500).send({
+      message: "create plant failed",
+      error: err.message,
+      code: err.code,
+      sqlMessage: err.sqlMessage,
+    });
   }
 }
 
