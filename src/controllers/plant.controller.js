@@ -114,7 +114,8 @@ export async function createPlant(req, reply) {
           eventType: "created",
           title: "เพิ่มต้นพืช",
           createdBy: userId,
-        });
+        },
+        db);
 
         await conn.commit();
         conn.release();

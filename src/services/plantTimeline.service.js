@@ -1,4 +1,4 @@
-import { db } from "../config/db.js";
+// import { db } from "../config/db.js";
 
 export async function createPlantTimelineLog({
   plantId,
@@ -21,7 +21,7 @@ export async function createPlantTimelineLog({
   imagePublicId = null,
   imageUrl = null,
   createdBy = null,
-}) {
+}, db) {
   await db.query(
     `
     INSERT INTO plant_timelines (
