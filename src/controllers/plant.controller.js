@@ -108,16 +108,16 @@ export async function createPlant(req, reply) {
           newData: { ...body, plant_code: plantCode },
         });
 
-        await createPlantTimelineLog(
-          {
-            plantId: result.insertId,
-            gardenId,
-            eventType: "created",
-            title: "เพิ่มต้นพืช",
-            createdBy: userId,
-          },
-          conn
-        );
+        // await createPlantTimelineLog(
+        //   {
+        //     plantId: result.insertId,
+        //     gardenId,
+        //     eventType: "created",
+        //     title: "เพิ่มต้นพืช",
+        //     createdBy: userId,
+        //   },
+        //   conn
+        // );
 
         await conn.commit();
         conn.release();
