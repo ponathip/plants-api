@@ -138,17 +138,18 @@ export async function createPlant(req, reply) {
 
     throw new Error("generate plant_code failed");
   } catch (err) {
-  console.error("CREATE PLANT ERROR:", err);
+    console.error("CREATE PLANT ERROR:", err);
 
-  return reply.code(500).send({
-    message: "create plant failed",
-    error: err.message,
-    code: err.code,
-    errno: err.errno,
-    sqlMessage: err.sqlMessage,
-    sqlState: err.sqlState,
-    stack: err.stack,
-  });
+    return reply.code(500).send({
+      message: "create plant failed",
+      error: err.message,
+      code: err.code,
+      errno: err.errno,
+      sqlMessage: err.sqlMessage,
+      sqlState: err.sqlState,
+      stack: err.stack,
+    });
+  }
 }
 
 /* ========================= DELETE ========================= */
