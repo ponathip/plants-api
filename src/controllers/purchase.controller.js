@@ -80,6 +80,16 @@ function normalizeUploadedImages(images) {
     }));
 }
 
+async function getNextCuttingCode() {
+  const [[row]] = await db.query(`
+    SELECT MAX(id) AS maxId
+    FROM purchase_items
+  `);
+
+  const next = Number(row?.maxId || 0) + 1;
+  return `CUT-${String(next).padStart(6, "0")}`;
+}
+
 export async function createPurchase(req, reply) {
   const { gardenId } = req.gardenContext;
   const userId = req.user.userId;
@@ -176,8 +186,14 @@ export async function createPurchase(req, reply) {
       const lineTotal =
         Number(item.quantity || 0) * Number(item.unit_price || 0);
 
+      const cuttingCode =
+        item.item_type === "cutting"
+          ? await getNextCuttingCode()
+          : null;
+
       const [itemResult] = await db.query(
         `INSERT INTO purchase_items (
+          cutting_code,
           purchase_id,
           plant_species_id,
           plant_variety_id,
@@ -188,6 +204,7 @@ export async function createPurchase(req, reply) {
           note
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
+          cuttingCode,
           purchaseId,
           item.plant_species_id || null,
           item.plant_variety_id || null,

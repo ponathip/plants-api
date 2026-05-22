@@ -814,13 +814,23 @@ export async function listPlants(req, reply) {
         pv.name AS plant_variety_name,
         COALESCE(pv.name, p.name) AS display_name,
         s.name AS supplier_name,
-        rv.name AS rootstock_variety_name
+        rv.name AS rootstock_variety_name,
+        grafts.graft_names
       FROM plants p
       LEFT JOIN gardens g ON g.id = p.garden_id
       LEFT JOIN plant_species ps ON ps.id = p.species_id
       LEFT JOIN plant_varieties pv ON pv.id = p.plant_variety_id
       LEFT JOIN suppliers s ON s.id = p.supplier_id
       LEFT JOIN plant_varieties rv ON rv.id = p.rootstock_variety_id
+      LEFT JOIN (
+        SELECT
+          pg.plant_id,
+          GROUP_CONCAT(DISTINCT gv.name ORDER BY gv.name SEPARATOR ', ') AS graft_names
+        FROM plant_grafts pg
+        LEFT JOIN plant_varieties gv ON gv.id = pg.graft_variety_id
+        WHERE pg.status = 'alive'
+        GROUP BY pg.plant_id
+      ) grafts ON grafts.plant_id = p.id
       ${where}
       ORDER BY p.id DESC
       LIMIT ? OFFSET ?
