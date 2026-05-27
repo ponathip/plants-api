@@ -140,6 +140,8 @@ export async function createPurchase(req, reply) {
   const shippingCost = Number(shipping_cost || 0);
   const grandTotal = itemsTotal + shippingCost;
 
+  await db.query("START TRANSACTION");
+
   try {
     const [purchaseResult] = await db.query(
       `INSERT INTO purchases (
@@ -202,7 +204,7 @@ export async function createPurchase(req, reply) {
           unit_price,
           line_total,
           note
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           cuttingCode,
           purchaseId,
@@ -263,7 +265,9 @@ export async function createPurchase(req, reply) {
       purchaseId,
       totals,
     });
+    await db.query("COMMIT");
   } catch (err) {
+    await db.query("ROLLBACK");
     console.error(err);
     return reply.code(500).send({ message: "บันทึกการซื้อไม่สำเร็จ" });
   }
