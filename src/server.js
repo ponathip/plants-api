@@ -19,7 +19,7 @@ import expenseRoutes from "./routes/expenses.routes.js"
 import plantTimelinesRoutes from "./routes/plant-timelines.routes.js"
 import auditRoutes from "./routes/audit.routes.js";
 import plantGraftRoutes from "./routes/plantGraft.routes.js";
-import graftsRoutes from "./routes/graft.routes.js";
+import graftsRoutes from "./routes/grafts.routes.js";
 
 // import swaggerTestRoutes from './routes/__swagger_test.routes.js'
 
