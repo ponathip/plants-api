@@ -10,43 +10,47 @@ export async function createPlantTimeline(req, reply) {
       return reply.code(400).send({ message: "ข้อมูลไม่ครบ" })
     }
 
-    const [plant_timelines] = await db.query(`
+    const [[plant]] = await db.query(
+      `SELECT id, garden_id FROM plants WHERE id = ? LIMIT 1`,
+      [body.plant_id]
+    )
+
+    if (!plant) {
+      return reply.code(404).send({ message: "ไม่พบต้นพืช" })
+    }
+
+    const [result] = await db.query(
+      `
       INSERT INTO plant_timelines (
         plant_id,
+        garden_id,
+        event_type,
         title,
         description,
         image_url,
         event_date
-      ) VALUES (?, ?, ?, ?, ?)
-    `, [
-      body.plant_id,
-      body.title,
-      body.description || null,
-      body.image_url || null,
-      body.event_date
-    ])
+      ) VALUES (?, ?, 'note', ?, ?, ?, ?)
+      `,
+      [
+        body.plant_id,
+        plant.garden_id,
+        body.title,
+        body.description || null,
+        body.image_url || null,
+        body.event_date,
+      ]
+    )
 
-    const plantTimelinesId = plant_timelines.insertId;
+    await db.query(
+      `UPDATE plants SET last_update_at = NOW() WHERE id = ?`,
+      [body.plant_id]
+    )
 
-    // อัปเดต last_update_at
-    await db.query(`
-      UPDATE plants
-      SET last_update_at = NOW()
-      WHERE id = ?
-    `, [body.plant_id])
-
-    await writeAudit({
-      gardenId,
-      userId,
-      action: 'create',
-      entity: 'plant_timelines',
-      entityId: plantTimelinesId,
-      newData: body,
-    });
-
-
-    return reply.send({ success: true, message: "เพิ่มไม่สำเร็จ" })
-
+    return reply.send({
+      success: true,
+      message: "เพิ่มสำเร็จ",
+      id: result.insertId,
+    })
   } catch (err) {
     console.error(err)
     return reply.code(500).send({ message: "เพิ่มไม่สำเร็จ" })
