@@ -59,7 +59,7 @@ const start = async () => {
   await app.register(plantTimelinesRoutes, {prefix: "/plant-timelines"} )
   await app.register(auditRoutes, { prefix: "/audit-logs" });
   await app.register(plantGraftRoutes);
-  await app.register(graftsRoutes, { prefix: "/graft" });
+  await app.register(graftsRoutes, { prefix: "/grafts" });
   await varietiesRoutes(app);
 
   await app.listen({ port: Number(process.env.PORT || 3001),
