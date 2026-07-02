@@ -11,9 +11,7 @@ import path from "path";
 import { pipeline } from "stream/promises";
 
 export default async function plantTimelinesRoutes(app) {
-  app.post("/", {
-    preHandler: [app.authenticate],
-  }, createPlantTimeline)
+  app.post("/public", createPlantTimeline)
 
   app.put("/:token", getPublicVariety);
 
